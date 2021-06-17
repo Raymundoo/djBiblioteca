@@ -5,6 +5,13 @@
     {% if table_config.create_action %}
       <button type="button" class="btn btn-success">Agregar registro</button>
     {% endif %}
+    
+    {% if table_config.form %}
+      <form action="" method="get" class="d-flex">
+        {{ table_config.form.q }}
+        <button class="btn btn-outline-success" type="submit">Buscar</button>
+      </form>
+    {% endif %}
   </div>
   <div class="bibl-table-body" style="margin-top: 25px;">
     <table>

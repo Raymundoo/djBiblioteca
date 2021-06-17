@@ -8,8 +8,8 @@ class TableConfig():
     fields = []
     # Datos
     datasource = []
-
-    searcheable = True
+    # form
+    form = None
 
     create_action = None
     update_action = None
