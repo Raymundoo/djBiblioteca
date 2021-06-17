@@ -1,0 +1,44 @@
+{% load bibl_tags %}
+
+<div class="bibl-table">
+  <div class="bibl-table-header">
+    {% if table_config.create_action %}
+      <button type="button" class="btn btn-success">Agregar registro</button>
+    {% endif %}
+  </div>
+  <div class="bibl-table-body" style="margin-top: 25px;">
+    <table>
+    <thead>
+      <tr>
+        {% for col in table_config.fields %}
+          <th scope="col">{{ col.label }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for data in table_config.datasource %}
+        <tr>
+          {% comment %} Contenido {% endcomment %}
+          {% for col in table_config.fields %}
+            {% if col.is_link %}
+              <td><a href="{{ data|get_value_from_dict:col.key }}"> Ir a sitio </a></td>
+            {% endif %}
+            
+            {% if not col.is_link %}
+              <td> {{ data|get_value_from_dict:col.key }} </td>
+            {% endif %}
+          {% endfor %}
+          
+          {% comment %} Actions {% endcomment %}
+          {% if table_config.update_action %}
+            <td><button type="button" class="btn btn-secondary">Editar</button></td>
+          {% endif %}
+          {% if table_config.delete_action %}
+            <td><button type="button" class="btn btn-danger">Borrar</button></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
