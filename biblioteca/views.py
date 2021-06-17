@@ -1,9 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Q
 # Local imports
 from biblioteca.utils.classes.TableConfig import TableConfig
 from biblioteca.models import Libro, Autor, Editor
-from biblioteca.forms import SearchForm
+from biblioteca.forms import SearchForm, AutorForm, EditorForm, LibroForm
 
 
 # Create your views here.
@@ -46,6 +47,82 @@ def autor_listado(request):
     return render(request, "autor_listado.html", {
         "table_config": table_conf,
     })
+
+
+
+# def autor_create(request):
+#     if request.method == "POST":
+#         form = AutorForm(request.POST)
+
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             # send_mail(
+#             #     cd["asunto"],
+#             #     cd["mensaje"],
+#             #     cd.get("email", "noreply@example.com"),
+#             #     ["fernando.perez.wisphub@gmail.com"]
+#             # )
+#             print "Autor creado", cd
+#             return HttpResponseRedirect("/autores/")
+#     else:
+#         form = AutorForm(initial={
+#             "asunto": "Hola"
+#         })
+#     return render(request, "autor_update.html", {
+#         "form": form,
+#         "title": "Crear nuevo Autor",
+#         "http_method": "post",
+#         "btn_style": "success",
+#         "btn_title": "Crear",
+#     })
+
+
+
+# def autor_update(request, autor_id):
+#     print("-->", request.method)
+#     if request.method == "POST":
+#         form = AutorForm(request.POST)
+
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             print "Autor actualizado", cd
+#             return HttpResponseRedirect("/autores/")
+#     else:
+#         form = AutorForm(initial={
+#             "nombre": "Hola"
+#         })
+#     return render(request, "autor_update.html", {
+#         "form": form,
+#         "title": "Modificar Autor",
+#         "http_method": "put",
+#         "btn_style": "primary",
+#         "btn_title": "Modificar",
+#     })
+
+
+def autor_cu(request, autor_id=None):
+    print("-->", request.method)
+    if request.method == "POST":
+        form = AutorForm(request.POST)
+
+        if form.is_valid():
+            cd = form.cleaned_data
+            print "Autor actualizado", cd
+            return HttpResponseRedirect("/autores/")
+    else:
+        form = AutorForm(initial={
+            "nombre": "Hola"
+        })
+    return render(request, "autor_update.html", {
+        "form": form,
+        "title": "Modificar Autor",
+        "http_method": "put",
+        }.update({
+        "btn_style": "primary",
+        "btn_title": "Modificar",
+    }))
+
+
 
 
 
@@ -94,6 +171,9 @@ def editor_listado(request):
     return render(request, "editor_listado.html", {
         "table_config": table_conf,
     })
+
+
+
 
 
 

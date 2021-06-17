@@ -20,6 +20,14 @@ urlpatterns = [
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.autor_listado),
     url(r'^autores$', views.autor_listado),
+    url(r'^crear/autor$', views.autor_cu),
+    url(r'^modificar/autor/(\d+)$', views.autor_cu),
+    
     url(r'^editores$', views.editor_listado),
+    url(r'^crear/editor$', views.autor_cu),
+    url(r'^modificar/editor/(\d+)$', views.autor_cu),
+    
     url(r'^libros$', views.libro_listado),
+    url(r'^crear/libro$', views.autor_cu),
+    url(r'^modificar/libro/(\d+)$', views.autor_cu),
 ]
