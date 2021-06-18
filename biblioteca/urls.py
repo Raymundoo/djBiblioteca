@@ -17,17 +17,20 @@ from django.conf.urls import include, url
 from biblioteca import views
 
 urlpatterns = [
-    # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.autor_listado),
+    
     url(r'^autores$', views.autor_listado),
     url(r'^crear/autor$', views.autor_cu),
     url(r'^modificar/autor/(\d+)$', views.autor_cu),
+    url(r'^eliminar/autor$', views.autor_delete),
     
     url(r'^editores$', views.editor_listado),
-    url(r'^crear/editor$', views.autor_cu),
-    url(r'^modificar/editor/(\d+)$', views.autor_cu),
+    url(r'^crear/editor$', views.editor_cu),
+    url(r'^modificar/editor/(\d+)$', views.editor_cu),
+    url(r'^eliminar/editor$', views.editor_delete),
     
     url(r'^libros$', views.libro_listado),
     url(r'^crear/libro$', views.autor_cu),
     url(r'^modificar/libro/(\d+)$', views.autor_cu),
+    url(r'^eliminar/libro$', views.libro_delete),
 ]

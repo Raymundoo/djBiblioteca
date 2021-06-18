@@ -3,7 +3,11 @@
 <div class="bibl-table">
   <div class="bibl-table-header">
     {% if table_config.create_action %}
-      <button type="button" class="btn btn-success">Agregar registro</button>
+    <a href="{{table_config.create_action|get_value_from_dict:"redirect"}}">
+      <button type="button" class="btn btn-success">
+        {{ table_config.create_action|get_value_from_dict:"label" }}
+      </button>
+    </a>
     {% endif %}
     
     {% if table_config.form %}
@@ -38,10 +42,19 @@
           
           {% comment %} Actions {% endcomment %}
           {% if table_config.update_action %}
-            <td><button type="button" class="btn btn-secondary">Editar</button></td>
+            <td>
+            <a href="{{table_config.update_action.redirect}}/{{ data.id }}">
+            <button type="button" class="btn btn-secondary">Editar</button>
+            </td>
           {% endif %}
           {% if table_config.delete_action %}
-            <td><button type="button" class="btn btn-danger">Borrar</button></td>
+            <td>
+              <form action="{{table_config.delete_action.redirect}}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="dlt_id" value="{{ data.id }}">
+                <button type="submit" class="btn btn-danger">Borrar</button>
+            </form>
+            </td>
           {% endif %}
         </tr>
       {% endfor %}

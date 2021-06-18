@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.db.models import Q
 # Local imports
@@ -7,7 +7,33 @@ from biblioteca.models import Libro, Autor, Editor
 from biblioteca.forms import SearchForm, AutorForm, EditorForm, LibroForm
 
 
-# Create your views here.
+#region utils
+def cu_response(request, form, key, is_new):
+    """
+    Elabora la respuesta para el template de crear/actualizar
+    """
+    return render(request, "{}_cu.html".format(key), {
+        "form":         form,
+        "title":        "{} {}".format("Modificar" if is_new else "Crear", key.capitalize()),
+        "btn_title":    "Modificar" if is_new else "Crear",
+    })
+
+
+
+def delete_response(request, entity, redirect):
+    """
+    Elimina una entidad mediante el id enviado como "dlt_id" desde el post
+    """
+    if request.method == "POST" and "dlt_id" in request.POST:
+        autor = entity.objects.get(id=request.POST["dlt_id"])
+        autor.delete()
+    return HttpResponseRedirect(redirect)
+#endregion
+
+
+
+
+#region autor views
 def autor_listado(request):
     table_conf = TableConfig()
     form = SearchForm(request.GET)
@@ -33,15 +59,15 @@ def autor_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Crear nuevo Autor",
-        "redirect": "#", # TODO:
+        "redirect": "crear/autor",
     }
     table_conf.update_action = {
         "label":  "Modificar Autor",
-        "redirect": "#", # TODO:
+        "redirect": "modificar/autor",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Autor",
-        "redirect": "#", # TODO:
+        "redirect": "eliminar/autor",
     }
     # res
     return render(request, "autor_listado.html", {
@@ -50,82 +76,49 @@ def autor_listado(request):
 
 
 
-# def autor_create(request):
-#     if request.method == "POST":
-#         form = AutorForm(request.POST)
-
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             # send_mail(
-#             #     cd["asunto"],
-#             #     cd["mensaje"],
-#             #     cd.get("email", "noreply@example.com"),
-#             #     ["fernando.perez.wisphub@gmail.com"]
-#             # )
-#             print "Autor creado", cd
-#             return HttpResponseRedirect("/autores/")
-#     else:
-#         form = AutorForm(initial={
-#             "asunto": "Hola"
-#         })
-#     return render(request, "autor_update.html", {
-#         "form": form,
-#         "title": "Crear nuevo Autor",
-#         "http_method": "post",
-#         "btn_style": "success",
-#         "btn_title": "Crear",
-#     })
-
-
-
-# def autor_update(request, autor_id):
-#     print("-->", request.method)
-#     if request.method == "POST":
-#         form = AutorForm(request.POST)
-
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             print "Autor actualizado", cd
-#             return HttpResponseRedirect("/autores/")
-#     else:
-#         form = AutorForm(initial={
-#             "nombre": "Hola"
-#         })
-#     return render(request, "autor_update.html", {
-#         "form": form,
-#         "title": "Modificar Autor",
-#         "http_method": "put",
-#         "btn_style": "primary",
-#         "btn_title": "Modificar",
-#     })
-
-
 def autor_cu(request, autor_id=None):
-    print("-->", request.method)
+    form = None
+
     if request.method == "POST":
         form = AutorForm(request.POST)
-
         if form.is_valid():
             cd = form.cleaned_data
-            print "Autor actualizado", cd
-            return HttpResponseRedirect("/autores/")
+            # Agregar nuevo autor
+            if not autor_id:
+                Autor.objects.create(**cd)
+            # Actualizar autor
+            else:
+                Autor.objects.filter(id=autor_id).update(**cd)
+            return HttpResponseRedirect("/autores")
+
     else:
-        form = AutorForm(initial={
-            "nombre": "Hola"
-        })
-    return render(request, "autor_update.html", {
-        "form": form,
-        "title": "Modificar Autor",
-        "http_method": "put",
-        }.update({
-        "btn_style": "primary",
-        "btn_title": "Modificar",
-    }))
+        # Inicializar el form con valores actuales del usuario
+        if autor_id:
+            try:
+                autor = Autor.objects.get(id=autor_id)
+                form = AutorForm(initial={
+                    "nombre": autor.nombre,
+                    "apellidos": autor.apellidos,
+                    "email": autor.email,
+                })
+            except Autor.DoesNotExist:
+                return HttpResponseRedirect("/autores")
+        
+        # Inicializar form vacio para nuevo usuario
+        else:
+            form = AutorForm()
+
+    return cu_response(request, form, "autor", bool(autor_id))
+
+
+def autor_delete(request):
+    return delete_response(request, Autor, "/autores")
+#endregion
 
 
 
 
-
+#region Editor views
 def editor_listado(request):
     table_conf = TableConfig()
     form = SearchForm(request.GET)
@@ -155,15 +148,15 @@ def editor_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Crear nuevo Editor",
-        "redirect": "#", # TODO:
+        "redirect": "crear/editor",
     }
     table_conf.update_action = {
         "label":  "Modificar Editor",
-        "redirect": "#", # TODO:
+        "redirect": "modificar/editor",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Editor",
-        "redirect": "#", # TODO:
+        "redirect": "eliminar/editor",
     }
 
 
@@ -174,11 +167,53 @@ def editor_listado(request):
 
 
 
+def editor_cu(request, editor_id=None):
+    form = None
+
+    if request.method == "POST":
+        form = EditorForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            # Agregar nuevo editor
+            if not editor_id:
+                autor = Editor.objects.create(**cd)
+            # Actualizar editor
+            else:
+                autor = Editor.objects.filter(id=editor_id).update(**cd)
+            return HttpResponseRedirect("/editores")
+
+    else:
+        # Inicializar el form con valores actuales del usuario
+        if editor_id:
+            try:
+                editor = Editor.objects.get(id=editor_id)
+                form = EditorForm(initial={
+                    "nombre":    editor.nombre,
+                    "domicilio": editor.domicilio,
+                    "ciudad":    editor.ciudad,
+                    "estado":    editor.estado,
+                    "pais":      editor.pais,
+                    "website":   editor.website,
+                })
+            except Editor.DoesNotExist:
+                return HttpResponseRedirect("/editores")
+        
+        # Inicializar form vacio para nuevo usuario
+        else:
+            form = EditorForm()
+    
+    return cu_response(request, form, "editor", bool(editor_id))
+
+
+
+def editor_delete(request):
+    return delete_response(request, Editor, "/editores")
+#endregion
 
 
 
 
-
+#region Libro views
 def libro_listado(request):
     table_conf = TableConfig()
     form = SearchForm(request.GET)
@@ -203,15 +238,15 @@ def libro_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Dar de alta libro",
-        "redirect": "#", # TODO:
+        "redirect": "crear/autor",
     }
     table_conf.update_action = {
         "label":  "Modificar Libro",
-        "redirect": "#", # TODO:
+        "redirect": "modificar/autor",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Libro",
-        "redirect": "#", # TODO:
+        "redirect": "eliminar/libro",
     }
 
 
@@ -219,3 +254,9 @@ def libro_listado(request):
     return render(request, "libro_listado.html", {
         "table_config": table_conf,
     })
+
+
+
+def libro_delete(request):
+    return delete_response(request, Libro, "/libros")
+#endregion

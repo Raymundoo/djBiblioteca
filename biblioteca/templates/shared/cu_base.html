@@ -1,0 +1,18 @@
+{% extends 'shared/base.html' %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ title }} </h1>
+
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {% block form_content %}{% endblock %}
+
+        <button class="btn btn-outline-primary" type="submit">
+            {{ btn_title }}
+        </button>
+    </form>
+{% endblock  %}
