@@ -15,22 +15,7 @@ class Editor(models.Model):
         verbose_name_plural = "Editores"
     
     def __str__(self):
-        return ("Editor<"
-            + "nombre='{}'"
-            + ", domicilio='{}'"
-            + ", ciudad='{}'"
-            + ", estado='{}'"
-            + ", pais='{}'"
-            + ", website='{}'"
-            + ">"
-        ).format(
-            self.nombre,
-            self.domicilio,
-            self.ciudad,
-            self.estado,
-            self.pais,
-            self.website
-        ) 
+        return self.nombre
     
 
 
@@ -44,11 +29,8 @@ class Autor(models.Model):
         verbose_name = 'Autor'
         verbose_name_plural = 'Autores'
 
-    def get_field(self, field):
-        return self[field]
-    
     def __str__(self):
-        return ("Autor<nombre='{}', apellidos='{}'>").format(self.nombre,self.apellidos,)
+        return "{} / {}".format(self.apellidos, self.nombre)
     
 
 
@@ -65,4 +47,15 @@ class Libro(models.Model):
         verbose_name_plural = 'Libros'
 
     def __str__(self):
-        return "Libro<titulo={}>".format(self.titulo)
+        return ("Libro <"
+            + "titulo='{}'"
+            + ", editor='{}'"
+            + ", fecha_publicacion='{}'"
+            + ", autores=[{}]"
+            + ">"
+        ).format(
+            self.titulo,
+            self.editor,
+            self.fecha_publicacion,
+            ", ".join(str(autor) for autor in self.autores.all()),
+        )

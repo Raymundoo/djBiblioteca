@@ -3,9 +3,9 @@
 <div class="bibl-table">
   <div class="bibl-table-header">
     {% if table_config.create_action %}
-    <a href="{{table_config.create_action|get_value_from_dict:"redirect"}}">
+    <a href="{{table_config.create_action.redirect}}">
       <button type="button" class="btn btn-success">
-        {{ table_config.create_action|get_value_from_dict:"label" }}
+        {{ table_config.create_action.label }}
       </button>
     </a>
     {% endif %}

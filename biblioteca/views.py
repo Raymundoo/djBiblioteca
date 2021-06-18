@@ -111,6 +111,7 @@ def autor_cu(request, autor_id=None):
     return cu_response(request, form, "autor", bool(autor_id))
 
 
+
 def autor_delete(request):
     return delete_response(request, Autor, "/autores")
 #endregion
@@ -176,10 +177,10 @@ def editor_cu(request, editor_id=None):
             cd = form.cleaned_data
             # Agregar nuevo editor
             if not editor_id:
-                autor = Editor.objects.create(**cd)
+                Editor.objects.create(**cd)
             # Actualizar editor
             else:
-                autor = Editor.objects.filter(id=editor_id).update(**cd)
+                Editor.objects.filter(id=editor_id).update(**cd)
             return HttpResponseRedirect("/editores")
 
     else:
@@ -223,7 +224,16 @@ def libro_listado(request):
     if form.is_valid():
         cd = form.cleaned_data
         if not cd['q']:
-            table_conf.datasource = Libro.objects.all().values()
+            table_conf.datasource = []
+            for libro in Libro.objects.select_related("editor").all():
+                table_conf.datasource.append(dict({
+                    "id":                libro.id,
+                    "titulo":            libro.titulo,
+                    "autores":           ", ".join( "{} {}".format(autor.apellidos, autor.nombre) for autor in libro.autores.all()),
+                    "editor":            libro.editor.nombre,
+                    "fecha_publicacion": libro.fecha_publicacion,
+                    "portada":           libro.portada,
+                }))
         else:
             table_conf.datasource = Libro.objects.filter(
                 titulo__icontains=cd['q']
@@ -238,11 +248,11 @@ def libro_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Dar de alta libro",
-        "redirect": "crear/autor",
+        "redirect": "crear/libro",
     }
     table_conf.update_action = {
         "label":  "Modificar Libro",
-        "redirect": "modificar/autor",
+        "redirect": "modificar/libro",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Libro",
@@ -254,6 +264,56 @@ def libro_listado(request):
     return render(request, "libro_listado.html", {
         "table_config": table_conf,
     })
+
+
+
+def libro_cu(request, libro_id=None):
+    form = None
+
+    if request.method == "POST":
+        form = LibroForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            # Agregar nuevo libro
+            if not libro_id:
+                libro = Libro.objects.create(
+                    titulo=cd["titulo"],
+                    editor=cd["editor"],
+                    fecha_publicacion=cd["fecha_publicacion"],
+                )
+                for autor in cd["autores"]:
+                    libro.autores.add(autor.id)
+            # Actualizar libro
+            else:
+                libro = Libro.objects.get(id=libro_id)
+                libro.titulo = cd["titulo"] 
+                libro.editor = cd["editor"]
+                libro.fecha_publicacion = cd["fecha_publicacion"]
+                libro.autores = cd["autores"]
+                if cd["portada"]:
+                    libro.autores = cd["portada"]
+                libro.save()
+            return HttpResponseRedirect("/libros")
+
+    else:
+        # Inicializar el form con valores actuales del usuario
+        if libro_id:
+            try:
+                libro = Libro.objects.select_related("editor").get(id=libro_id)
+                form = LibroForm(initial={
+                    "titulo":            libro.titulo,
+                    "fecha_publicacion": libro.fecha_publicacion,
+                    "editor":            libro.editor,
+                    "autores":           libro.autores.all()
+                })
+            except Libro.DoesNotExist:
+                return HttpResponseRedirect("/libros")
+        
+        # Inicializar form vacio para nuevo usuario
+        else:
+            form = LibroForm()
+    
+    return cu_response(request, form, "libro", bool(libro_id))
 
 
 

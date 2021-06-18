@@ -1,4 +1,6 @@
 from django import forms
+# local imports
+from biblioteca.models import Autor, Editor
 
 #region utilds
 def build_attrs(key):
@@ -61,9 +63,25 @@ class EditorForm(forms.Form):
 
 
 class LibroForm(forms.Form):
-    titulo = forms.CharField(max_length=100)
-    # autores = forms.ManyToManyField(Autor)
-    # editor = forms.ForeignKey(Editor)
-    fecha_publicacion = forms.DateField(required=False)
-    portada = forms.ImageField(required=False)
+    titulo = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs=build_attrs("titulo"))
+    )
+    fecha_publicacion = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs=build_attrs("fecha_publicacion"))
+    )
+    portada = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs=build_attrs("portada"))
+    )
+    autores = forms.ModelMultipleChoiceField(
+        queryset=Autor.objects.all(),
+        widget=forms.SelectMultiple(attrs=build_attrs("autores")),
+    )
+    editor = forms.ModelChoiceField(
+        queryset=Editor.objects.all(),
+        widget=forms.Select(attrs=build_attrs("editor")),
+        empty_label="Seleccione Editor"
+    )
     

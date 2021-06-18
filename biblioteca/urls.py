@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^eliminar/editor$', views.editor_delete),
     
     url(r'^libros$', views.libro_listado),
-    url(r'^crear/libro$', views.autor_cu),
-    url(r'^modificar/libro/(\d+)$', views.autor_cu),
+    url(r'^crear/libro$', views.libro_cu),
+    url(r'^modificar/libro/(\d+)$', views.libro_cu),
     url(r'^eliminar/libro$', views.libro_delete),
 ]
