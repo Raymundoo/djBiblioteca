@@ -271,7 +271,7 @@ def libro_cu(request, libro_id=None):
     form = None
 
     if request.method == "POST":
-        form = LibroForm(request.POST)
+        form = LibroForm(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
             # Agregar nuevo libro
@@ -280,6 +280,7 @@ def libro_cu(request, libro_id=None):
                     titulo=cd["titulo"],
                     editor=cd["editor"],
                     fecha_publicacion=cd["fecha_publicacion"],
+                    portada=cd["portada"],
                 )
                 for autor in cd["autores"]:
                     libro.autores.add(autor.id)
@@ -291,7 +292,7 @@ def libro_cu(request, libro_id=None):
                 libro.fecha_publicacion = cd["fecha_publicacion"]
                 libro.autores = cd["autores"]
                 if cd["portada"]:
-                    libro.autores = cd["portada"]
+                    libro.portada = cd["portada"]
                 libro.save()
             return HttpResponseRedirect("/libros")
 

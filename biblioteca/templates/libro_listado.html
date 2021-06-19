@@ -37,7 +37,13 @@
             <tbody>
             {% for data in table_config.datasource %}
                 <tr>
-                    <td> Portada </td>
+                    <td>
+                        {% if data.portada %}
+                            <img src="media/{{data.portada}}" alt="{{data.titulo}}" style="width: 100px;">
+                        {% else %}
+                            No image
+                        {% endif %}
+                    </td>
                     <td> {{data.titulo}} </td>
                     <td> {{data.fecha_publicacion}} </td>
                     <td> {{data.autores}} </td>

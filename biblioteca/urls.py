@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from biblioteca import views
 
 urlpatterns = [
-    url(r'^$', views.autor_listado),
+    url(r'^$', views.libro_listado),
     
     url(r'^autores$', views.autor_listado),
     url(r'^crear/autor$', views.autor_cu),
