@@ -1,6 +1,6 @@
 from django import forms
 # local imports
-from biblioteca.models import Libro
+from biblioteca.models import Autor, Editor, Libro
 
 #region utilds
 def build_attrs(key):
@@ -18,19 +18,19 @@ class SearchForm(forms.Form):
     
     
     
-class AutorForm(forms.Form):
-    nombre = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs=build_attrs("nombre"))
-    )
-    apellidos = forms.CharField(
-        max_length=40,
-        widget=forms.TextInput(attrs=build_attrs("apellidos"))
-    )
-    email = forms.EmailField(
-        required=False,
-        widget=forms.EmailInput(attrs=build_attrs("email"))
-    )
+class AutorForm(forms.ModelForm):
+    class Meta():
+        model = Autor
+        fields = [
+            "nombre",
+            "apellidos",
+            "email",
+        ]
+        widgets = {
+            "nombre":    forms.TextInput(attrs=build_attrs("nombre")),
+            "apellidos": forms.TextInput(attrs=build_attrs("apellidos")),
+            "email":     forms.EmailInput(attrs=build_attrs("email")),
+        }
     
 
 

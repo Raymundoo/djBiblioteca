@@ -1,4 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
+# from django.views.generic import ListView, CreateView
+# from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 # Local imports
@@ -59,15 +61,15 @@ def autor_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Crear nuevo Autor",
-        "redirect": "crear/autor",
+        "redirect": "/crear/autor",
     }
     table_conf.update_action = {
         "label":  "Modificar Autor",
-        "redirect": "modificar/autor",
+        "redirect": "/modificar/autor",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Autor",
-        "redirect": "eliminar/autor",
+        "redirect": "/eliminar/autor",
     }
     # res
     return render(request, "autor_listado.html", {
@@ -149,15 +151,15 @@ def editor_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Crear nuevo Editor",
-        "redirect": "crear/editor",
+        "redirect": "/crear/editor",
     }
     table_conf.update_action = {
         "label":  "Modificar Editor",
-        "redirect": "modificar/editor",
+        "redirect": "/modificar/editor",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Editor",
-        "redirect": "eliminar/editor",
+        "redirect": "/eliminar/editor",
     }
 
 
@@ -248,15 +250,15 @@ def libro_listado(request):
     ]
     table_conf.create_action = {
         "label":  "Dar de alta libro",
-        "redirect": "crear/libro",
+        "redirect": "/crear/libro",
     }
     table_conf.update_action = {
         "label":  "Modificar Libro",
-        "redirect": "modificar/libro",
+        "redirect": "/modificar/libro",
     }
     table_conf.delete_action = {
         "label":  "Eliminar Libro",
-        "redirect": "eliminar/libro",
+        "redirect": "/eliminar/libro",
     }
 
 
@@ -277,6 +279,7 @@ def libro_cu(request, libro_id=None):
         form = LibroForm(request.POST, request.FILES, instance=libro_instance)
         if form.is_valid():
             form.save()
+            # https://docs.djangoproject.com/en/1.8/ref/urlresolvers/
             return HttpResponseRedirect("/libros")
     else:
         form = LibroForm(instance=libro_instance) if libro_instance else LibroForm()
@@ -287,3 +290,54 @@ def libro_cu(request, libro_id=None):
 def libro_delete(request):
     return delete_response(request, Libro, "/libros")
 #endregion
+
+
+"""
+---------------------------------------------------------------
+"""
+
+#region autor views
+class AutorListView(ListView):
+    model = Autor
+    template_name = "autor_listado__cbv.html"
+    # paginate_by = 2 # https://docs.djangoproject.com/en/3.2/topics/pagination/#using-paginator-in-view
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(AutorListView, self).get_context_data(**kwargs)
+        
+        # table config
+        # context['form'] = SearchForm(request.GET) # NOTE: Donde obtener el request?
+        context['field'] = [
+            { "label": "Nombre",    "key": "nombre" },
+            { "label": "Apellidos", "key": "apellidos" },
+            { "label": "Email",     "key": "email" },
+        ]
+        context["create_action"] = {
+            "label":  "Crear nuevo Autor",
+            "redirect": "/crear/autor_cbv", # TODO:
+        }
+        context["update_action"] = {
+            "label":  "Modificar Autor",
+            "redirect": "/modificar/autor_cbv", # TODO:
+        }
+        context["delete_action"] = {
+            "label":  "Eliminar Autor",
+            "redirect": "/eliminar/autor_cbv", # TODO:
+        }
+        
+        return context
+
+
+
+
+class AutorCreateView(CreateView):
+    model = Autor
+    form_class = AutorForm
+    template_name = "autor_crear__cbv.html"
+    success_url = reverse_lazy("autores_cbv")
+
+
+#endregion
+
+

@@ -19,18 +19,40 @@ from biblioteca import views
 urlpatterns = [
     url(r'^$', views.libro_listado),
     
-    url(r'^autores$', views.autor_listado),
-    url(r'^crear/autor$', views.autor_cu),
-    url(r'^modificar/autor/(\d+)$', views.autor_cu),
-    url(r'^eliminar/autor$', views.autor_delete),
+    #region function views
+    url(r'^autores/$', views.autor_listado),
+    url(r'^crear/autor/$', views.autor_cu),
+    url(r'^modificar/autor/(\d+)/$', views.autor_cu),
+    url(r'^eliminar/autor/$', views.autor_delete),
+    #endregion
+    # #region class views 
+    # url(r'^autores_cbv/$', views.AutorListView.as_view(), name="autores_cbv"),
+    # url(r'^crear/autor_cbv/$', views.AutorCreateView.as_view()),
+    # #endregion
+
+
     
-    url(r'^editores$', views.editor_listado),
-    url(r'^crear/editor$', views.editor_cu),
-    url(r'^modificar/editor/(\d+)$', views.editor_cu),
-    url(r'^eliminar/editor$', views.editor_delete),
+    #region function views
+    url(r'^editores/$', views.editor_listado),
+    url(r'^crear/editor/$', views.editor_cu),
+    url(r'^modificar/editor/(\d+)/$', views.editor_cu),
+    url(r'^eliminar/editor/$', views.editor_delete),
+    #endregion
+    #region class views
+    # ...
+    #endregion
+
+
     
-    url(r'^libros$', views.libro_listado),
-    url(r'^crear/libro$', views.libro_cu),
-    url(r'^modificar/libro/(\d+)$', views.libro_cu),
-    url(r'^eliminar/libro$', views.libro_delete),
+    #region function views
+    url(r'^libros/$', views.libro_listado),
+    url(r'^crear/libro/$', views.libro_cu),
+    url(r'^modificar/libro/(\d+)/$', views.libro_cu),
+    url(r'^eliminar/libro/$', views.libro_delete),
+    #endregion
+    #region class views
+    # ...
+    #endregion
+
+
 ]

@@ -1,63 +1,53 @@
 {% extends 'shared/base.html' %}
 {% block title %}
-    Listado de Libros
+    Listado de Autores
 {% endblock %}
 
 {% block content %}
-    <h1>Listado de Libros</h1>
+    <h1>Listado de Autores {{ hi }} </h1>
 
     <div class="bibl-table">
         <div class="bibl-table-header">
-            {% if table_config.create_action %}
-            <a href="{{table_config.create_action.redirect}}">
+            {% if create_action %}
+            <a href="{{create_action.redirect}}">
             <button type="button" class="btn btn-success">
-                {{ table_config.create_action.label }}
+                {{ create_action.label }}
             </button>
             </a>
             {% endif %}
             
-            {% if table_config.form %}
+            {% comment %} {% if table_config.form %}
             <form action="" method="get" class="d-flex">
                 {{ table_config.form.q }}
                 <button class="btn btn-outline-success" type="submit">Buscar</button>
             </form>
-            {% endif %}
+            {% endif %} {% endcomment %}
         </div>
         <div class="bibl-table-body" style="margin-top: 25px;">
             <table>
             <thead>
             <tr>
-                <th scope="col">Portada</th>
-                <th scope="col">Titulo</th>
-                <th scope="col">Fecha de publicación</th>
-                <th scope="col">Autores</th>
-                <th scope="col">Editor</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Email</th>
             </tr>
             </thead>
             <tbody>
-            {% for data in table_config.datasource %}
+            {% for data in object_list %}
                 <tr>
-                    <td>
-                        {% if data.portada %}
-                            <img src="/media/{{data.portada}}" alt="{{data.titulo}}" style="width: 100px;">
-                        {% else %}
-                            No image
-                        {% endif %}
-                    </td>
-                    <td> {{data.titulo}} </td>
-                    <td> {{data.fecha_publicacion}} </td>
-                    <td> {{data.autores}} </td>
-                    <td> {{data.editor}} </td>
+                    <td> {{data.nombre}} </td>
+                    <td> {{data.apellidos}} </td>
+                    <td> {{data.email}} </td>
                     
-                    {% if table_config.update_action %}
+                    {% if update_action %}
                         <td>
-                            <a href="{{table_config.update_action.redirect}}/{{ data.id }}">
+                            <a href="{{update_action.redirect}}/{{ data.id }}">
                             <button type="button" class="btn btn-secondary">Editar</button>
                         </td>
                     {% endif %}
-                    {% if table_config.delete_action %}
+                    {% if delete_action %}
                         <td>
-                            <form action="{{table_config.delete_action.redirect}}" method="post">
+                            <form action="{{delete_action.redirect}}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="dlt_id" value="{{ data.id }}">
                                 <button type="submit" class="btn btn-danger">Borrar</button>
