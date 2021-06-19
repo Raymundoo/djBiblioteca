@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 # Local imports
 from biblioteca.utils.classes.TableConfig import TableConfig
@@ -268,52 +268,18 @@ def libro_listado(request):
 
 
 def libro_cu(request, libro_id=None):
-    form = None
+    # Se verifica la existencia del libro
+    if libro_id:
+        libro_instance = get_object_or_404(Libro, id=libro_id)
 
+    # Update/create
     if request.method == "POST":
-        form = LibroForm(request.POST, request.FILES)
+        form = LibroForm(request.POST, request.FILES, instance=libro_instance)
         if form.is_valid():
-            cd = form.cleaned_data
-            # Agregar nuevo libro
-            if not libro_id:
-                libro = Libro.objects.create(
-                    titulo=cd["titulo"],
-                    editor=cd["editor"],
-                    fecha_publicacion=cd["fecha_publicacion"],
-                    portada=cd["portada"],
-                )
-                for autor in cd["autores"]:
-                    libro.autores.add(autor.id)
-            # Actualizar libro
-            else:
-                libro = Libro.objects.get(id=libro_id)
-                libro.titulo = cd["titulo"] 
-                libro.editor = cd["editor"]
-                libro.fecha_publicacion = cd["fecha_publicacion"]
-                libro.autores = cd["autores"]
-                if cd["portada"]:
-                    libro.portada = cd["portada"]
-                libro.save()
+            form.save()
             return HttpResponseRedirect("/libros")
-
     else:
-        # Inicializar el form con valores actuales del usuario
-        if libro_id:
-            try:
-                libro = Libro.objects.select_related("editor").get(id=libro_id)
-                form = LibroForm(initial={
-                    "titulo":            libro.titulo,
-                    "fecha_publicacion": libro.fecha_publicacion,
-                    "editor":            libro.editor,
-                    "autores":           libro.autores.all()
-                })
-            except Libro.DoesNotExist:
-                return HttpResponseRedirect("/libros")
-        
-        # Inicializar form vacio para nuevo usuario
-        else:
-            form = LibroForm()
-    
+        form = LibroForm(instance=libro_instance) if libro_instance else LibroForm()
     return cu_response(request, form, "libro", bool(libro_id))
 
 
