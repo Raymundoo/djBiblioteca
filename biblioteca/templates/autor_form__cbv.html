@@ -1,10 +1,9 @@
 {% extends 'shared/base.html' %}
-{% block title %}
-    {{ title }}
-{% endblock %}
+
+{% block title %} {{ title }} {% endblock %}
 
 {% block content %}
-    <h1>Crear Autor cbv</h1>
+    <h1>Formulario de Autor cbv</h1>
 
 
     <form action="" method="post">{% csrf_token %}
@@ -31,7 +30,7 @@
         </div>
 
         <button class="btn btn-outline-primary" type="submit">
-            Crear
+            Continuar
         </button>
     </form>
 {% endblock  %}

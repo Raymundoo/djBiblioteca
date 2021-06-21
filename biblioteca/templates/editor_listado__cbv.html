@@ -1,16 +1,16 @@
 {% extends 'shared/base.html' %}
 {% block title %}
-    Listado de Autores
+    Listado de Editores
 {% endblock %}
 
 {% block content %}
-    <h1>Listado de Autores</h1>
+    <h1>Listado de Editores</h1>
 
     <div class="bibl-table">
         <div class="bibl-table-header">
-            <a href="/crear/autor_cbv">
+            <a href="/crear/editor_cbv">
             <button type="button" class="btn btn-success">
-                Crear Autor
+                Crear Editor
             </button>
             </a>
         </div>
@@ -19,23 +19,29 @@
             <thead>
             <tr>
                 <th scope="col">Nombre</th>
-                <th scope="col">Apellidos</th>
-                <th scope="col">Email</th>
+                <th scope="col">Domicilio</th>
+                <th scope="col">Ciudad</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Pais</th>
+                <th scope="col">Sitio oficial</th>
             </tr>
             </thead>
             <tbody>
             {% for data in object_list %}
                 <tr>
                     <td> {{data.nombre}} </td>
-                    <td> {{data.apellidos}} </td>
-                    <td> {{data.email}} </td>
+                    <td> {{data.domicilio}} </td>
+                    <td> {{data.ciudad}} </td>
+                    <td> {{data.estado}} </td>
+                    <td> {{data.pais}} </td>
+                    <td> <a href="{{data.website}}">Ir a sitio</a></td>
                     <td><a
-                        href="/modificar/autor_cbv/{{ data.id }}"
+                        href="/modificar/editor_cbv/{{ data.id }}"
                         class="btn btn-secondary">
                         Editar
                     </a></td>
                     <td><a
-                        href="/eliminar/autor_cbv/{{ data.id }}"
+                        href="/eliminar/editor_cbv/{{ data.id }}"
                         class="btn btn-danger">
                         Eliminar
                     </a></td>

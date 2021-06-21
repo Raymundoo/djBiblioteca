@@ -34,31 +34,25 @@ class AutorForm(forms.ModelForm):
     
 
 
-class EditorForm(forms.Form):
-    nombre = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs=build_attrs("nombre"))
-    )
-    domicilio = forms.CharField(
-        max_length=50,
-        widget=forms.TextInput(attrs=build_attrs("domicilio"))
-    )
-    ciudad = forms.CharField(
-        max_length=60,
-        widget=forms.TextInput(attrs=build_attrs("ciudad"))
-    )
-    estado = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs=build_attrs("estado"))
-    )
-    pais = forms.CharField(
-        max_length=50,
-        widget=forms.TextInput(attrs=build_attrs("pais"))
-    )
-    website = forms.URLField(
-        required=False,
-        widget=forms.TextInput(attrs=build_attrs("website"))
-    )
+class EditorForm(forms.ModelForm):
+    class Meta():
+        model = Editor
+        fields = [
+            "nombre",
+            "domicilio",
+            "ciudad",
+            "estado",
+            "pais",
+            "website",
+        ]
+        widgets = {
+            "nombre":     forms.TextInput(attrs=build_attrs("nombre")),
+            "domicilio":  forms.TextInput(attrs=build_attrs("domicilio")),
+            "ciudad":     forms.TextInput(attrs=build_attrs("ciudad")),
+            "estado":     forms.TextInput(attrs=build_attrs("estado")),
+            "pais":       forms.TextInput(attrs=build_attrs("pais")),
+            "website":    forms.TextInput(attrs=build_attrs("website")),
+        }
 
 
 
