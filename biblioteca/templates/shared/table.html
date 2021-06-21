@@ -2,17 +2,17 @@
 
 <div class="bibl-table">
   <div class="bibl-table-header">
-    {% if table_config.create_action %}
-    <a href="{{table_config.create_action.redirect}}">
+    {% if actions and actions.create %}
+    <a href="{{actions.create.redirect}}">
       <button type="button" class="btn btn-success">
-        {{ table_config.create_action.label }}
+        {{ actions.create.label }}
       </button>
     </a>
     {% endif %}
     
-    {% if table_config.form %}
+    {% if buscador %}
       <form action="" method="get" class="d-flex">
-        {{ table_config.form.q }}
+        {{ buscador.q }}
         <button class="btn btn-outline-success" type="submit">Buscar</button>
       </form>
     {% endif %}
@@ -21,16 +21,16 @@
     <table>
     <thead>
       <tr>
-        {% for col in table_config.fields %}
+        {% for col in fields %}
           <th scope="col">{{ col.label }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
-      {% for data in table_config.datasource %}
+      {% for data in object_list %}
         <tr>
           {% comment %} Contenido {% endcomment %}
-          {% for col in table_config.fields %}
+          {% for col in fields %}
             {% if col.is_link %}
               <td><a href="{{ data|get_value_from_dict:col.key }}"> Ir a sitio </a></td>
             {% endif %}
@@ -40,21 +40,20 @@
             {% endif %}
           {% endfor %}
           
-          {% comment %} Actions {% endcomment %}
-          {% if table_config.update_action %}
-            <td>
-            <a href="{{table_config.update_action.redirect}}/{{ data.id }}">
-            <button type="button" class="btn btn-secondary">Editar</button>
-            </td>
+          
+          {% if actions and actions.update %}
+            <td> <a
+              href="{{actions.update.redirect}}/{{ data.id }}"
+              class="btn btn-secondary">
+              {{ actions.update.label }}
+            </a></td>
           {% endif %}
-          {% if table_config.delete_action %}
-            <td>
-              <form action="{{table_config.delete_action.redirect}}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="dlt_id" value="{{ data.id }}">
-                <button type="submit" class="btn btn-danger">Borrar</button>
-            </form>
-            </td>
+          {% if actions and actions.delete %}
+            <td><a
+              href="{{actions.delete.redirect}}/{{ data.id }}"
+              class="btn btn-danger">
+              {{ actions.delete.label }}
+            </a></td>
           {% endif %}
         </tr>
       {% endfor %}
