@@ -15,6 +15,7 @@ Including another URLconf
 from django.conf.urls import include, url
 # Local imports
 from biblioteca.views import (
+    # function view
     autor_listado,  autor_form,  autor_delete,
     editor_listado, editor_form, editor_delete,
     libro_listado,  libro_form,  libro_delete,
@@ -22,6 +23,10 @@ from biblioteca.views import (
     AutorListView,  AutorCreateView,  AutorUpdateView,  AutorDeleteView,
     EditorListView, EditorCreateView, EditorUpdateView, EditorDeleteView,
     LibroListView,  LibroCreateView,  LibroUpdateView,  LibroDeleteView,
+    # aditional - class based view
+    AutorDetailView,
+    # raw class based view
+    AutorRawListView, AutorRawCreateView, AutorRawUpdateView, AutorRawDeleteView,
 
 )
 
@@ -34,12 +39,19 @@ urlpatterns = [
     url(r'^modificar/autor/(\d+)/$', autor_form),
     url(r'^eliminar/autor/(\d+)/$', autor_delete),
     #endregion
-    # #region class views 
+    #region class based views 
     url(r'^autores_cbv/$', AutorListView.as_view(), name="autores_cbv"),
     url(r'^crear/autor_cbv/$', AutorCreateView.as_view()),
     url(r'^modificar/autor_cbv/(?P<pk>[0-9]+)/$', AutorUpdateView.as_view()),
     url(r'^eliminar/autor_cbv/(?P<pk>[0-9]+)/$', AutorDeleteView.as_view()),
-    # #endregion
+    url(r'^autor_cbv/(?P<pk>[0-9]+)/$', AutorDetailView.as_view()),
+    #endregion
+    #region class based views with master class based views "View"
+    url(r'^autores_v/$', AutorRawListView.as_view(), name="autores_v"),
+    url(r'^crear/autor_v/$', AutorRawCreateView.as_view()),
+    url(r'^modificar/autor_v/(?P<pk>[0-9]+)/$', AutorRawUpdateView.as_view()),
+    url(r'^eliminar/autor_v/(?P<pk>[0-9]+)/$', AutorRawDeleteView.as_view()),
+    #endregion
 
 
     
@@ -49,7 +61,7 @@ urlpatterns = [
     url(r'^modificar/editor/(\d+)/$', editor_form),
     url(r'^eliminar/editor/(\d+)/$', editor_delete),
     #endregion
-    #region class views
+    #region class based views
     url(r'^editores_cbv/$', EditorListView.as_view(), name="editores_cbv"),
     url(r'^crear/editor_cbv/$', EditorCreateView.as_view()),
     url(r'^modificar/editor_cbv/(?P<pk>[0-9]+)/$', EditorUpdateView.as_view()),
@@ -64,7 +76,7 @@ urlpatterns = [
     url(r'^modificar/libro/(\d+)/$', libro_form),
     url(r'^eliminar/libro/(\d+)/$', libro_delete),
     #endregion
-    #region class views
+    #region class based views
     url(r'^libros_cbv/$', LibroListView.as_view(), name="libros_cbv"),
     url(r'^crear/libro_cbv/$', LibroCreateView.as_view()),
     url(r'^modificar/libro_cbv/(?P<pk>[0-9]+)/$', LibroUpdateView.as_view()),

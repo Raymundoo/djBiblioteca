@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
@@ -17,7 +17,11 @@ def generic_delete(request, instance, tpl_name, redirect):
 #endregion
 
 
-
+"""
+---------------------------------------------------------------
+function views
+---------------------------------------------------------------
+"""
 
 #region autor views
 def autor_listado(request):
@@ -297,3 +301,95 @@ class LibroDeleteView(DeleteView):
     template_name = "libro_delete__cbv.html"
     success_url = reverse_lazy("libros_cbv")
 #endregion
+
+
+
+# V-37 Class based views
+class AutorDetailView(DetailView):
+    model = Autor
+    template_name = "autor_detail__cbv.html"
+
+
+"""
+---------------------------------------------------------------
+Master class "View"
+---------------------------------------------------------------
+"""
+
+# V-37
+class AutorRawListView(View):
+    model = Autor
+    template_name = "autor_listado__cbv.html"
+    queryset = Autor.objects.all()
+
+    def get_queryset(self):
+        return self.queryset
+
+
+    def get(self, request, *args, **kwargs):
+        form = SearchForm(request.GET)
+        # filter
+        if form.is_valid():
+            cd = form.cleaned_data
+            if not cd['q']:
+                self.queryset = self.model.objects.all()
+            else:
+                self.queryset = self.model.objects.filter(
+                    Q(nombre__icontains=cd['q'])    |
+                    Q(apellidos__icontains=cd['q']) |
+                    Q(email__icontains=cd['q'])
+                )
+        return render(request, self.template_name, {
+            "buscador": form,
+            "object_list": self.get_queryset(),
+        })
+
+
+# TODO:
+class AutorRawCreateView(View):
+    model = Autor
+    form_class = AutorForm
+    template_name = "autor_form__cbv.html"
+    success_url = "/autores_v"
+ 
+
+
+class AutorRawUpdateView(View):
+    model = Autor
+    form_class = AutorForm
+    template_name = "autor_form__cbv.html"
+    success_url = "/autores_v"
+
+    def get_object(self):
+        _id = self.kwargs.get("pk")
+        if _id is not None:
+            return get_object_or_404(self.model, id=_id)
+        return
+
+
+    def get(self, request, id=None, *args, **kwargs):
+        context = {}
+        obj = self.get_object()
+        if obj is not None:
+            context["form"] = self.form_class(instance=obj)
+            context["object"] = obj
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, id=None, *args, **kwargs):
+        context = {}
+        context["object"] = self.get_object()
+        if context["object"] is not None:
+            context["form"] = self.form_class(request.POST, instance=context["object"])
+            if context["form"].is_valid:
+                context["form"].save()
+                return HttpResponseRedirect(self.success_url)
+        return render(request, self.template_name, context)
+
+
+# TODO:
+class AutorRawDeleteView(View):
+    model = Autor
+    form_class = AutorForm
+    template_name = "autor_delete__v.html"
+    success_url = reverse_lazy("autores_v")
