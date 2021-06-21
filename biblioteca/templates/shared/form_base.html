@@ -1,18 +1,16 @@
 {% extends 'shared/base.html' %}
 {% block title %}
-    {{ title }}
+    {{ action }}
 {% endblock %}
 
 {% block content %}
-    <h1>{{ title }} </h1>
+    <h1>{{ action }} </h1>
 
 
-    <form action="" method="post">
-        {% csrf_token %}
+    <form method="post"> {% csrf_token %}
         {% block form_content %}{% endblock %}
-
         <button class="btn btn-outline-primary" type="submit">
-            {{ btn_title }}
+            {{ action }}
         </button>
     </form>
 {% endblock  %}
