@@ -13,6 +13,12 @@
   <body>
     {% include 'shared/navbar.html' %}
     
+    {% if messages %} {% for message in messages %}
+    <div class="alert {{ message.tags }} alert-dismissible alert-wisp" role="alert">
+        {{ message|safe }}
+    </div>
+    {% endfor %} {% endif %}
+    
     {% block header %}
     {% endblock %}
 
