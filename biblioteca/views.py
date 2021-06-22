@@ -345,14 +345,23 @@ class AutorRawListView(View):
         })
 
 
-# TODO:
 class AutorRawCreateView(View):
     model = Autor
     form_class = AutorForm
     template_name = "autor_form__cbv.html"
     success_url = "/autores_v"
  
+    def get(self, request, *args, **kwargs):
+        context = { "form": self.form_class() }
+        return render(request, self.template_name, context)
 
+
+    def post(self, request, *args, **kwargs):
+        context = { "form": self.form_class(request.POST) }
+        if context["form"].is_valid:
+            context["form"].save()
+            return HttpResponseRedirect(self.success_url)
+        return render(request, self.template_name, context)
 
 class AutorRawUpdateView(View):
     model = Autor
@@ -387,9 +396,30 @@ class AutorRawUpdateView(View):
         return render(request, self.template_name, context)
 
 
-# TODO:
 class AutorRawDeleteView(View):
     model = Autor
     form_class = AutorForm
-    template_name = "autor_delete__v.html"
-    success_url = reverse_lazy("autores_v")
+    template_name = "autor_delete__cbv.html"
+    success_url = "/autores_v"
+
+    def get_object(self):
+        _id = self.kwargs.get("pk")
+        if _id is not None:
+            return get_object_or_404(self.model, id=_id)
+        return
+
+
+    def get(self, request, id=None, *args, **kwargs):
+        context = {}
+        obj = self.get_object()
+        if obj is not None:
+            context["object"] = obj
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, id=None, *args, **kwargs):
+        context = { "object": self.get_object() }
+        if context["object"] is not None:
+            context["object"].delete()
+            return HttpResponseRedirect(self.success_url)
+        return render(request, self.template_name, context)
